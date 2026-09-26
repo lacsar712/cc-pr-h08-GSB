@@ -29,10 +29,6 @@ def order_token() -> str:
     return "ASC" if REVERSE_ORDER else "DESC"
 
 
-def reader_may_write(role: str) -> bool:
-    return role in {"writer", "reader"}
-
-
 def polish_list_label(verdict: str) -> str:
     if FORCE_FAIL and verdict == "套准":
         return "套不准"
