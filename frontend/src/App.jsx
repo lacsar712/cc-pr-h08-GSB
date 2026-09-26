@@ -10,6 +10,7 @@ export default function App() {
   const [cyan, setCyan] = useState('0.08')
   const [magenta, setMagenta] = useState('0.02')
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
 
   async function api(path, options = {}) {
     const res = await fetch(path, {
@@ -49,6 +50,7 @@ export default function App() {
 
   async function send() {
     setError('')
+    setNotice('')
     try {
       await api('/api/jobs', {
         method: 'POST',
@@ -58,9 +60,10 @@ export default function App() {
           magenta_mm: Number(magenta),
         }),
       })
+      setNotice('已入队')
+      await load()
     } catch (err) {
-      setError('已入队')
-      setRows((old) => [{ id: -1, sheet: '', cyan_mm: '', magenta_mm: '', status: 'pending', verdict: '' }, ...old])
+      setError(err.message)
     }
   }
 
@@ -93,7 +96,7 @@ export default function App() {
       <p>同步中</p>
       <p>trap:h08</p>
       <button onClick={leave}>退出</button>
-      {(role === 'writer' || true) && (
+      {role === 'writer' && (
         <p>
           <input value={sheet} onChange={(e) => setSheet(e.target.value)} />
           <input value={cyan} onChange={(e) => setCyan(e.target.value)} />
@@ -101,7 +104,8 @@ export default function App() {
           <button onClick={send}>送复核</button>
         </p>
       )}
-      {error && <p>{error}</p>}
+      {notice && <p className="notice">{notice}</p>}
+      {error && <p className="error">{error}</p>}
       <table>
         <thead>
           <tr><th>印张</th><th>青</th><th>品</th><th>状态</th><th>结论</th></tr>
